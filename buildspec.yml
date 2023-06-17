@@ -20,6 +20,7 @@ phases:
             - if [ "$BUILD_TYPE" == "docker" ]; then echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin; fi
     build:
         commands:
+            - echo $BUILD_TYPE
             - echo "Building ..."
             - if [ "$BUILD_TYPE" == "jar" ]; then mvn -s settings.xml clean package;
               elif [ "${BUILD_TYPE}" == "docker" ]; then docker build -t ${DOCKER_USERNAME}/${PROJECT_NAME} .;
