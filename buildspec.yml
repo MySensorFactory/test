@@ -15,7 +15,7 @@ phases:
             - echo "Build type is ${BUILD_TYPE}"
             - echo "Fetching repository token ..."
             - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain factory --domain-owner 781648067507 --region eu-central-1 --query authorizationToken --output text`
-            - if [ "$BUILD_TYPE" == "docker" ]; then echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin;
+            - if [ "$BUILD_TYPE" == "docker" ]; then echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin; fi
     build:
         commands:
             - echo "Building ..."
