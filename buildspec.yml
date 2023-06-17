@@ -2,30 +2,32 @@ version: 0.2
 
 env:
     BUILD_TYPE: jar
+    DOCKER_USERNAME: juliantheking
+    DOCKER_PASSWORD: Omega1999
+    PROJECT_NAME: demo1
 
 phases: 
     install:
         runtime-versions:
             java: corretto17
-        commands:
-            - echo "installing something"
     pre_build:
-        commands: 
-            - echo "fetching token"
+        commands:
+            - echo "Build type is: ${BUILD_TYPE}"
+            - echo "Fetching repository token ..."
             - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain factory --domain-owner 781648067507 --region eu-central-1 --query authorizationToken --output text`
+            - if [ "$BUILD_TYPE" == "docker" ]; then echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin;
     build:
         commands:
             - echo "Building ..."
-            - mvn clean package -DskipTests
-#            - if [ "$BUILD_TYPE" == "jar" ]; then echo "Zmienna środowiskowa jest równa wartość1";
-#              elif [ "$ZMIENNA_SRODOWISKOWA" == "wartość2" ]; then echo "Zmienna środowiskowa jest równa wartość2";
-#              else echo "Zmienna środowiskowa nie jest równa wartość1 ani wartość2"; fi
-#            - echo "we will run some tests"
-#            - grep -Fq "Congratulations" index.html
+            - if [ "${BUILD_TYPE}" == "jar" ]; then mvn -s settings.xml clean package;
+              elif [ "${BUILD_TYPE}" == "docker" ]; then docker build -t ${DOCKER_USERNAME}/${PROJECT_NAME} .;
+              else echo "Unknown build type"; exit 1; fi
     post_build:
         commands:
             - echo "Publishing to .jar repository"
-            - mvn -s settings.xml clean package deploy
+            - if [ "${BUILD_TYPE}" == "jar" ]; then mvn -s settings.xml deploy;
+                elif [ "${BUILD_TYPE}" == "docker" ]; then docker push ${DOCKER_USERNAME}/${PROJECT_NAME};
+                else echo "Unknown build type"; exit 1; fi
 cache:
     paths:
         - '/root/.m2/**/*'
