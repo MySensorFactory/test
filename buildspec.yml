@@ -25,13 +25,13 @@ phases:
             - echo $BUILD_TYPE
             - echo "Building ..."
             - if [ "$BUILD_TYPE" = "jar" ]; then mvn -s settings.xml clean package;
-              elif [ "${BUILD_TYPE}" = "docker" ]; then docker build -t ${DOCKER_USERNAME}/${PROJECT_NAME} .;
+              elif [ "$BUILD_TYPE" = "docker" ]; then docker build -t ${DOCKER_USERNAME}/${PROJECT_NAME} .;
               else echo "Unknown build type"; exit 1; fi
     post_build:
         commands:
             - echo "Publishing to repository ..."
             - if [ "$BUILD_TYPE" = "jar" ]; then mvn -s settings.xml deploy;
-                elif [ "${BUILD_TYPE}" = "docker" ]; then docker push ${DOCKER_USERNAME}/${PROJECT_NAME};
+                elif [ "$BUILD_TYPE" = "docker" ]; then docker push ${DOCKER_USERNAME}/${PROJECT_NAME};
                 else echo "Unknown build type"; exit 1; fi
 cache:
     paths:
