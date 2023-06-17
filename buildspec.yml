@@ -13,6 +13,8 @@ phases:
             java: corretto17
     pre_build:
         commands:
+            - echo "bash"
+            - echo $BASH_VERSION
             - echo $BUILD_TYPE
             - echo "Build type is $BUILD_TYPE"
             - echo "Fetching repository token ..."
@@ -27,7 +29,7 @@ phases:
               else echo "Unknown build type"; exit 1; fi
     post_build:
         commands:
-            - echo "Publishing to .jar repository"
+            - echo "Publishing to repository ..."
             - if [ "$BUILD_TYPE" == "jar" ]; then mvn -s settings.xml deploy;
                 elif [ "${BUILD_TYPE}" == "docker" ]; then docker push ${DOCKER_USERNAME}/${PROJECT_NAME};
                 else echo "Unknown build type"; exit 1; fi
