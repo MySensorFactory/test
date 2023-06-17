@@ -11,7 +11,8 @@ phases:
             - echo "installing something"
     pre_build:
         commands: 
-            - echo "start"
+            - echo "fetching token"
+            - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain factory --domain-owner 781648067507 --region eu-central-1 --query authorizationToken --output text`
     build:
         commands:
             - echo "Building ..."
@@ -25,4 +26,3 @@ phases:
         commands:
             - echo "Publishing to .jar repository"
             - mvn -s settings.xml clean package deploy
-            
