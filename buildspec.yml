@@ -25,6 +25,9 @@ phases:
     post_build:
         commands:
             - echo "Publishing to .jar repository"
-            - echo "Envs"
-            - env
             - mvn -s settings.xml clean package deploy
+cache:
+    paths:
+        - '/root/.m2/**/*'
+        - '/root/.npm/**/*'
+        - '/root/.pip-cache/**/*'
