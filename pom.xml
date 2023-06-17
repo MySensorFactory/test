@@ -8,6 +8,9 @@
         <version>3.1.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
+    <packaging>jar</packaging>
+
     <groupId>com.example</groupId>
     <artifactId>demo1</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -38,7 +41,16 @@
         </dependency>
     </dependencies>
 
+    <distributionManagement>
+        <repository>
+            <id>factory-FactoryRepository</id>
+            <name>factory-FactoryRepository</name>
+            <url>https://factory-781648067507.d.codeartifact.eu-central-1.amazonaws.com/maven/FactoryRepository/</url>
+        </repository>
+    </distributionManagement>
+
     <build>
+        <finalName>${name}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

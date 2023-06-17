@@ -1,0 +1,28 @@
+version: 0.2
+
+env:
+    BUILD_TYPE: jar
+
+phases: 
+    install:
+        runtime-versions:
+            java: corretto17
+        commands:
+            - echo "installing something"
+    pre_build:
+        commands: 
+            -
+    build:
+        commands:
+            - echo "Building ..."
+            - mvn clean package -DskipTests
+#            - if [ "$BUILD_TYPE" == "jar" ]; then echo "Zmienna środowiskowa jest równa wartość1";
+#              elif [ "$ZMIENNA_SRODOWISKOWA" == "wartość2" ]; then echo "Zmienna środowiskowa jest równa wartość2";
+#              else echo "Zmienna środowiskowa nie jest równa wartość1 ani wartość2"; fi
+#            - echo "we will run some tests"
+#            - grep -Fq "Congratulations" index.html
+    post_build:
+        commands:
+            - echo "Publishing to .jar repository"
+            - mvn deploy
+            
