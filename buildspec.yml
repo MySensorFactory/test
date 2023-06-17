@@ -19,18 +19,18 @@ phases:
             - echo "Build type is $BUILD_TYPE"
             - echo "Fetching repository token ..."
             - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain factory --domain-owner 781648067507 --region eu-central-1 --query authorizationToken --output text`
-            - if [ "$BUILD_TYPE" == "docker" ]; then echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin; fi
+            - if [ "$BUILD_TYPE" = "docker" ]; then echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin; fi
     build:
         commands:
             - echo $BUILD_TYPE
             - echo "Building ..."
             - if [ "$BUILD_TYPE" == "jar" ]; then mvn -s settings.xml clean package;
-              elif [ "${BUILD_TYPE}" == "docker" ]; then docker build -t ${DOCKER_USERNAME}/${PROJECT_NAME} .;
+              elif [ "${BUILD_TYPE}" = "docker" ]; then docker build -t ${DOCKER_USERNAME}/${PROJECT_NAME} .;
               else echo "Unknown build type"; exit 1; fi
     post_build:
         commands:
             - echo "Publishing to repository ..."
-            - if [ "$BUILD_TYPE" == "jar" ]; then mvn -s settings.xml deploy;
+            - if [ "$BUILD_TYPE" = "jar" ]; then mvn -s settings.xml deploy;
                 elif [ "${BUILD_TYPE}" == "docker" ]; then docker push ${DOCKER_USERNAME}/${PROJECT_NAME};
                 else echo "Unknown build type"; exit 1; fi
 cache:
