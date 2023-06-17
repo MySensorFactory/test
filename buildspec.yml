@@ -25,4 +25,6 @@ phases:
     post_build:
         commands:
             - echo "Publishing to .jar repository"
+            - echo "Envs"
+            - env
             - mvn -s settings.xml clean package deploy
