@@ -12,8 +12,8 @@ phases:
         runtime-versions:
             java: corretto17
         commands:
-            - yum update -y
-            - yum install docker -y
+            - apt update -y
+            - apt install docker.io -y
             - service docker start
             - systemctl enable docker.service
             - systemctl status docker.service
