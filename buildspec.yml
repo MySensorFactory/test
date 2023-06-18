@@ -12,6 +12,8 @@ phases:
         runtime-versions:
             java: corretto17
         commands:
+            - yum update
+            - yum install docker
             - service docker start ; $ systemctl enable docker.service
             - systemctl status docker.service
             - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
