@@ -14,7 +14,8 @@ phases:
         commands:
             - yum update
             - yum install docker -y
-            - service docker start ; $ systemctl enable docker.service
+            - service docker start
+            - systemctl enable docker.service
             - systemctl status docker.service
             - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
     pre_build:
