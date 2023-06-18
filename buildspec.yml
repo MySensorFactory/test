@@ -29,7 +29,7 @@ phases:
             - if [ "$BUILD_TYPE" = "jar" ]; then mvn -s settings.xml clean package;
               elif [ "$BUILD_TYPE" = "docker" ]; then docker build -t ${DOCKER_USERNAME}/${PROJECT_NAME} .;
               else echo "Unknown build type"; exit 1; fi
-    repository:
+    post_build:
         commands:
             - echo "Publishing $BUILD_TYPE to repository ..."
             - if [ "$BUILD_TYPE" = "jar" ]; then mvn -s settings.xml deploy;
