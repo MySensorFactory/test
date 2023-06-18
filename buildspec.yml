@@ -3,28 +3,37 @@ version: 0.2
 env:
     variables:
         PROJECT_NAME: demo1
+        DOCKER_BUILD: yes
+        DEPLOY: yes
+        DOCKER_PASSWORD: Omega1999
+        DOCKER_USERNAME: juliantheking
 
 phases: 
     install:
         runtime-versions:
             java: corretto17
+        commands:
+            - apt update -y
+            - apt install docker.io -y
+            - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
+            - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
     pre_build:
         commands:
             - echo "Fetching repository token ..."
             - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain factory --domain-owner 781648067507 --region eu-central-1 --query authorizationToken --output text`
-#            - if [ "$BUILD_TYPE" = "docker" ]; then echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin; fi
     build:
         commands:
             - echo "Building ..."
             - mvn -s settings.xml clean package
-#              elif [ "$BUILD_TYPE" = "docker" ]; then docker build -t ${DOCKER_USERNAME}/${PROJECT_NAME} .;
-#              else echo "Unknown build type"; exit 1; fi
     post_build:
         commands:
-            - echo "Publishing to repository ..."
+            - echo "Publishing to artifact repository ..."
             - mvn -s settings.xml deploy
-#                elif [ "$BUILD_TYPE" = "docker" ]; then docker push ${DOCKER_USERNAME}/${PROJECT_NAME};
-#                else echo "Unknown build type"; exit 1; fi
+            - if [ "$DOCKER_BUILD" != "yes"]; then exit 0; fi
+            - echo "Building docker image"
+            - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+            - docker build -t ${DOCKER_USERNAME}/${PROJECT_NAME} .
+            - docker push ${DOCKER_USERNAME}/${PROJECT_NAME}
 cache:
     paths:
         - '/root/.m2/**/*'
