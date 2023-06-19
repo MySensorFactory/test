@@ -42,6 +42,9 @@ phases:
             - apt-get update
             - apt-get install -y kubectl
             - kubectl version --client
+            - mkdir ~/.kube
+            - aws s3 cp s3://factory-ci-cd/config ~/.kube/config
+            - kubectl config view
 cache:
     paths:
         - '/root/.m2/**/*'
