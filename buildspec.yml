@@ -5,8 +5,6 @@ env:
         PROJECT_NAME: demo1
         DOCKER_BUILD: yes
         DEPLOY: yes
-        DOCKER_PASSWORD: Omega1999
-        DOCKER_USERNAME: juliantheking
 
 phases: 
     install:
