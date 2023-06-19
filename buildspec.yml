@@ -12,7 +12,7 @@ phases:
             java: corretto17
         commands:
             - apt update -y
-            - apt install docker.io -y
+            - apt install docker.io curl -y
             - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
             - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
     pre_build:
@@ -24,16 +24,24 @@ phases:
     build:
         commands:
             - echo "Building ..."
-            - mvn -s settings.xml clean package
+#            - mvn -s settings.xml clean package
     post_build:
         commands:
             - echo "Publishing to artifact repository ..."
             - mvn -s settings.xml deploy
             - if [ "$DOCKER_BUILD" != "yes"]; then exit 0; fi
-            - echo "Building docker image"
-            - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
-            - docker build -t ${DOCKER_USERNAME}/${PROJECT_NAME} --build-arg DIRECTORY=target --build-arg SERVICE_NAME=$PROJECT_NAME .
-            - docker push ${DOCKER_USERNAME}/${PROJECT_NAME}
+            - echo "Building docker image ..."
+#            - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+#            - docker build -t ${DOCKER_USERNAME}/${PROJECT_NAME} --build-arg DIRECTORY=target --build-arg SERVICE_NAME=$PROJECT_NAME .
+#            - docker push ${DOCKER_USERNAME}/${PROJECT_NAME}
+            - if [ "$DEPLOY" != "yes"]; then exit 0; fi
+            - echo "Deploying application ..."
+            - sudo apt-get install -y ca-certificates curl
+            - curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
+            - echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+            - apt-get update
+            - apt-get install -y kubectl
+            - kubectl version --client
 cache:
     paths:
         - '/root/.m2/**/*'
