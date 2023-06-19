@@ -46,6 +46,8 @@ phases:
             - aws s3 cp s3://factory-ci-cd/config ~/.kube/config
             - kubectl config view
             - kubectl apply -f deployment.yaml
+            - kubectl wait --for=condition=available deployment/$PROJECT_NAME-deployment
+            - kubectl apply -f service.yaml
 cache:
     paths:
         - '/root/.m2/**/*'
