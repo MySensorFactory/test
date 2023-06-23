@@ -16,6 +16,7 @@ spec:
     spec:
       containers:
         - name: demo1
+          imagePullPolicy: Always
           image: juliantheking/demo1
           ports:
             - containerPort: 8080

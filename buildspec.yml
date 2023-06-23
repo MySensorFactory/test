@@ -36,18 +36,6 @@ phases:
             - docker push ${DOCKER_USERNAME}/${PROJECT_NAME}
             - if [ "$DEPLOY" != "yes"]; then exit 0; fi
             - echo "Deploying application ..."
-            - sudo apt-get install -y ca-certificates curl
-            - curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
-            - echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-            - apt-get update
-            - apt-get install -y kubectl
-            - kubectl version --client
-            - mkdir ~/.kube
-            - aws s3 cp s3://factory-ci-cd/config ~/.kube/config
-            - kubectl config view
-            - kubectl apply -f deployment.yaml
-            - kubectl wait --for=condition=available deployment/$PROJECT_NAME-deployment
-            - kubectl apply -f service.yaml
 cache:
     paths:
         - '/root/.m2/**/*'
