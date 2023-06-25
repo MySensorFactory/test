@@ -36,6 +36,7 @@ phases:
             - docker push ${DOCKER_USERNAME}/${PROJECT_NAME}
             - if [ "$DEPLOY" != "yes"]; then exit 0; fi
             - echo "Deploying application ..."
+            - curl -X POST -H "Content-Type: application/json" -d '{ "namespace": "wartość_namespace", "config_path": "wartość_config_path", "bucket_name": "wartość_bucket_name" }' http://ec2-3-69-148-111.eu-central-1.compute.amazonaws.com:7000/deploy
 cache:
     paths:
         - '/root/.m2/**/*'
