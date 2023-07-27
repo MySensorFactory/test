@@ -4,7 +4,6 @@ env:
     variables:
         PROJECT_NAME: demo1
         DOCKER_BUILD: yes
-        DEPLOY: yes
 
 phases: 
     install:
@@ -24,7 +23,7 @@ phases:
     build:
         commands:
             - echo "Building ..."
-#            - mvn -s settings.xml clean package
+            - mvn -s settings.xml clean package
     post_build:
         commands:
             - echo "Publishing to artifact repository ..."
@@ -32,11 +31,10 @@ phases:
             - if [ "$DOCKER_BUILD" != "yes"]; then exit 0; fi
             - echo "Building docker image ..."
             - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
-#            - docker build -t ${DOCKER_USERNAME}/${PROJECT_NAME} --build-arg DIRECTORY=target --build-arg SERVICE_NAME=$PROJECT_NAME .
-#            - docker push ${DOCKER_USERNAME}/${PROJECT_NAME}
-            - if [ "$DEPLOY" != "yes"]; then exit 0; fi
-            - echo "Deploying application ..."
-            - curl -X POST -H "Content-Type':' application/json" -d "{ "namespace"':' "factory-apps", "config_path"':' "applications/demo1", "bucket_name"':' "factory-ci-cd" }" "http://ec2-3-69-148-111.eu-central-1.compute.amazonaws.com:7000/deploy"
+            - docker build -t ${DOCKER_USERNAME}/${PROJECT_NAME} --build-arg DIRECTORY=target --build-arg SERVICE_NAME=$PROJECT_NAME .
+            - docker push ${DOCKER_USERNAME}/${PROJECT_NAME}
+            - echo "Sending application manifests to S3 ..."
+            - aws s3 cp kube/** s3://factory-ci-cd/applications/$PROJECT_NAME/**
 cache:
     paths:
         - '/root/.m2/**/*'
